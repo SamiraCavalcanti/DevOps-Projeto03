@@ -232,6 +232,7 @@
             const cacheText = data.from_cache ? 
                 `📋 Dados do cache • ${data.timestamp}` : 
                 `🌐 Dados atualizados • ${data.timestamp}`;
+            
             document.getElementById('cacheInfo').textContent = cacheText;
             
             document.getElementById('weatherCard').style.display = 'block';

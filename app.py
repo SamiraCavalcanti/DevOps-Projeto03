@@ -26,7 +26,7 @@ def get_weather_data(city):
                 cached_data['from_cache'] = True
                 return cached_data
         
-        # Fazer requisição para API
+        # Fazer requisição para API real
         url = f"{BASE_URL}?q={city}&appid={API_KEY}&units=metric&lang=pt_br"
         response = requests.get(url, timeout=5)
         
