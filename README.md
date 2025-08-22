@@ -114,13 +114,13 @@ python test_app.py
 ## 🌐 **Deploy**
 
 ### **Automático:**
-- **Push** para `main` → **GitHub Actions** → **Deploy Render**
+- **Push** para `main` → **GitHub Actions** → **Build Docker** → **Docker Hub** → **Deploy Render**
 
 ### **Manual no Render:**
 1. Conectar repositório GitHub
-2. Configurar Runtime: Python 3
-3. Build: `pip install -r requirements.txt`
-4. Start: `python app.py`
+2. Configurar Runtime: Docker
+3. Registry: Docker Hub
+4. Image: `samiracavalcanti/devops-projeto03:latest`
 
 ## 📊 **Monitoramento**
 
@@ -176,7 +176,7 @@ curl -X POST http://localhost:5000/api/weather \
 
 ### **Fluxo completo:**
 ```
-git push → GitHub Actions → Testes → Build → Deploy → App Online
+git push → GitHub Actions → Testes → Build Docker → Push Docker Hub → Deploy Render → App Online
 ```
 
 ## 🎉 **Demonstração**
