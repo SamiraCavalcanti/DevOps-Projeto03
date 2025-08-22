@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌤️ Weather App DevOps</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            margin-top: 50px;
+        }
+        
+        h1 {
+            color: #2d3436;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        
+        .search-container {
+            margin-bottom: 30px;
+        }
+        
+        input[type="text"] {
+            width: 70%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus {
+            border-color: #0984e3;
+        }
+        
+        button {
+            background: #0984e3;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #74b9ff;
+        }
+        
+        .weather-card {
+            background: linear-gradient(135deg, #00b894, #00cec9);
+            color: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .temperature {
+            font-size: 3em;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+        
+        .description {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            text-transform: capitalize;
+        }
+        
+        .details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .detail-item {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px;
+            border-radius: 10px;
+        }
+        
+        .error {
+            background: #e17055;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .loading {
+            display: none;
+            margin-top: 20px;
+        }
+        
+        .footer {
+            margin-top: 50px;
+            color: rgba(255, 255, 255, 0.8);
+            text-align: center;
+        }
+        
+        .cache-info {
+            background: rgba(255, 255, 255, 0.2);
+            color: #636e72;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌤️ Weather App</h1>
+        <p style="color: #636e72; margin-bottom: 20px;">Projeto DevOps - Pipeline CI/CD</p>
+        
+        <div class="search-container">
+            <input type="text" id="cityInput" placeholder="Digite o nome da cidade..." 
+                   onkeypress="if(event.key==='Enter') searchWeather()">
+            <button onclick="searchWeather()">🔍 Buscar</button>
+        </div>
+        
+        <div class="loading" id="loading">
+            <p>🔄 Carregando dados do clima...</p>
+        </div>
+        
+        <div class="error" id="error"></div>
+        
+        <div class="weather-card" id="weatherCard">
+            <h2 id="cityName"></h2>
+            <div class="temperature" id="temperature"></div>
+            <div class="description" id="description"></div>
+            <img id="weatherIcon" style="width: 100px; height: 100px;">
+            
+            <div class="details">
+                <div class="detail-item">
+                    <strong>Sensação Térmica</strong><br>
+                    <span id="feelsLike"></span>
+                </div>
+                <div class="detail-item">
+                    <strong>Umidade</strong><br>
+                    <span id="humidity"></span>
+                </div>
+                <div class="detail-item">
+                    <strong>Pressão</strong><br>
+                    <span id="pressure"></span>
+                </div>
+                <div class="detail-item">
+                    <strong>Vento</strong><br>
+                    <span id="windSpeed"></span>
+                </div>
+            </div>
+            
+            <div class="cache-info" id="cacheInfo"></div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>🚀 DevOps Pipeline | GitHub Actions + Docker + Render</p>
+        <p><a href="/health" style="color: rgba(255,255,255,0.8)">Health Check</a> | 
+           <a href="/status" style="color: rgba(255,255,255,0.8)">Status</a></p>
+    </div>
+
+    <script>
+        function searchWeather() {
+            const city = document.getElementById('cityInput').value.trim();
+            if (!city) {
+                showError('Por favor, digite o nome de uma cidade');
+                return;
+            }
+            
+            showLoading(true);
+            hideError();
+            hideWeatherCard();
+            
+            fetch(`/weather/${encodeURIComponent(city)}`)
+                .then(response => response.json())
+                .then(data => {
+                    showLoading(false);
+                    if (data.error) {
+                        showError(data.error);
+                    } else {
+                        showWeatherData(data);
+                    }
+                })
+                .catch(error => {
+                    showLoading(false);
+                    showError('Erro ao buscar dados do clima');
+                    console.error('Error:', error);
+                });
+        }
+        
+        function showWeatherData(data) {
+            document.getElementById('cityName').textContent = `${data.city}, ${data.country}`;
+            document.getElementById('temperature').textContent = `${data.temperature}°C`;
+            document.getElementById('description').textContent = data.description;
+            document.getElementById('feelsLike').textContent = `${data.feels_like}°C`;
+            document.getElementById('humidity').textContent = `${data.humidity}%`;
+            document.getElementById('pressure').textContent = `${data.pressure} hPa`;
+            document.getElementById('windSpeed').textContent = `${data.wind_speed} m/s`;
+            
+            const iconUrl = `https://openweathermap.org/img/wn/${data.icon}@2x.png`;
+            document.getElementById('weatherIcon').src = iconUrl;
+            
+            const cacheText = data.from_cache ? 
+                `📋 Dados do cache • ${data.timestamp}` : 
+                `🌐 Dados atualizados • ${data.timestamp}`;
+            document.getElementById('cacheInfo').textContent = cacheText;
+            
+            document.getElementById('weatherCard').style.display = 'block';
+        }
+        
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+        
+        function hideError() {
+            document.getElementById('error').style.display = 'none';
+        }
+        
+        function hideWeatherCard() {
+            document.getElementById('weatherCard').style.display = 'none';
+        }
+        
+        // Buscar clima de exemplo ao carregar
+        window.onload = function() {
+            document.getElementById('cityInput').value = 'São Paulo';
+            searchWeather();
+        };
+    </script>
+</body>
+</html>
