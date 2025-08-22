@@ -6,8 +6,9 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiar apenas os arquivos necessários da aplicação
+# Copiar arquivos da aplicação
 COPY app.py .
+COPY templates/ templates/
 
 EXPOSE 5000
 
