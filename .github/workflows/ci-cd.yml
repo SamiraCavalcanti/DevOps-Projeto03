@@ -27,4 +27,4 @@ jobs:
       with:
         context: .
         push: true
-        tags: samiracavalcanti/devops-projeto03:latest 
+        tags: samiracavalcanti/devops-projeto03:latest
