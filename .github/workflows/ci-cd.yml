@@ -1,5 +1,4 @@
 name: CI Pipeline - Build e Push da Imagem Docker
-
 # Gatilho: Disparar o workflow em cada push para a branch 'main'
 on:
   push:
