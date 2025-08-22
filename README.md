@@ -55,10 +55,10 @@ Uma aplicação web completa de clima desenvolvida em Flask para demonstrar um p
 ├── 📁 templates/
 │   └── 🌐 index.html               # Interface web
 ├── 📁 .github/workflows/
-│   ├── ⚙️ ci-cd.yml                # Pipeline principal
-│   └── 🚀 ci-cd-completo.yml       # Pipeline avançado
+│   └── ⚙️ ci-cd.yml                # Pipeline CI/CD
 ├── 🚫 .dockerignore                # Arquivos ignorados Docker
 ├── 📖 DEPLOY-RENDER.md             # Instruções deploy
+├── 📄 LICENSE                      # Licença do projeto
 └── 📄 README.md                    # Esta documentação
 ```
 
